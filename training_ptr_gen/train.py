@@ -16,7 +16,6 @@ from data_util.batcher import Batcher
 from data_util.data import Vocab, outputids2words, myid2word
 from data_util.utils import calc_running_avg_loss
 from train_util import get_input_from_batch, get_output_from_batch
-
 from pyfasttext import FastText
 
 use_cuda = config.use_gpu and torch.cuda.is_available()
@@ -104,7 +103,7 @@ class Train(object):
             # for i, id in enumerate(y_t_1):
             #     print (id)
             #     myid2word(id, self.vocab, article_oovs[i])
-            y_t_1 = [myid2word(id,self.vocab, article_oovs[i]) for i, id in enumerate(y_t_1.numpy())]
+            y_t_1 = [myid2word(id, self.vocab, article_oovs[i]) for i, id in enumerate(y_t_1.numpy())]
             y_t_1 = torch.Tensor([ft_model.get_numpy_vector(w) for w in y_t_1])
             final_dist, s_t_1,  c_t_1, attn_dist, p_gen, next_coverage = self.model.decoder(y_t_1, s_t_1,
                                                         encoder_outputs, encoder_feature, enc_padding_mask, c_t_1,
