@@ -1,6 +1,8 @@
+!finished_files/vocab.txt
 embedding/*
 .DS_Store
 .idea
 .idea/*
 */.DS_Store
 finished_files/*
+data_util/config.py
