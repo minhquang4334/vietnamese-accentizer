@@ -6,9 +6,9 @@ root_dir = os.path.expanduser("~")
 train_data_path = "finished_files/chunked/train_*"
 eval_data_path = "finished_files/val.bin"
 decode_data_path = "finished_files/test.bin"
-vocab_path = "finished_files/vocab"
+vocab_path = "finished_files/vocab.txt"
 log_root = "log"
-fasttext_path = "/home/datbtd/torch_sum/ft_summarizer/data_util/fasttext_model.bin"
+fasttext_path = "embedding/fasttext.bin"
 
 # Hyperparameters
 hidden_dim= 128
