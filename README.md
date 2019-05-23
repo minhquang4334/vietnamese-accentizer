@@ -95,7 +95,8 @@ Eval
 
 
 @author [minhquang4334](https://github.com/minhquang4334)
-Contact: <minhquang4334@gmail.com>
+
+@contact: <minhquang4334@gmail.com>
 
 
 
