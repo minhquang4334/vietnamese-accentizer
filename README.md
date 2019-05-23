@@ -1,6 +1,14 @@
 ## Introduction
 This pytorch project built a model that can normalize noise vietnamese user generated text. Source base [pointer-summary](https://github.com/atulkum/pointer_summarizer) and [datblue-pointer-summary-with-pretrained-fasttext](https://github.com/datblue/ft_sum)
 
+## Model
+
+My model like:
+![Pointer Generator Networks](http://abigailsee.com/img/pointer-gen.png)
+
+With pretrainned `fastText` model as input vector
+
+
 ## How to run
 ### Install project
 #### Clone this project:
