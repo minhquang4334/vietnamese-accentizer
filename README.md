@@ -1,61 +1,79 @@
 pytorch implementation of *[Get To The Point: Summarization with Pointer-Generator Networks](https://arxiv.org/abs/1704.04368)*
 
-Train with pointer generation + coverage loss enabled 
---------------------------------------------
-After training for 100k iterations with coverage loss enabled (batch size 8)
+## Introduction
+This project built a model that can normalize noise vietnamese user generated text. Source base [pointer-summary](https://github.com/atulkum/pointer_summarizer) and [datblue-pointer-summary-with-pretrained-fasttext](https://github.com/datblue/ft_sum)
 
+## How to run
+### Install project
+#### Clone this project:
 ```
-ROUGE-1:
-rouge_1_f_score: 0.3907 with confidence interval (0.3885, 0.3928)
-rouge_1_recall: 0.4434 with confidence interval (0.4410, 0.4460)
-rouge_1_precision: 0.3698 with confidence interval (0.3672, 0.3721)
-
-ROUGE-2:
-rouge_2_f_score: 0.1697 with confidence interval (0.1674, 0.1720)
-rouge_2_recall: 0.1920 with confidence interval (0.1894, 0.1945)
-rouge_2_precision: 0.1614 with confidence interval (0.1590, 0.1636)
-
-ROUGE-l:
-rouge_l_f_score: 0.3587 with confidence interval (0.3565, 0.3608)
-rouge_l_recall: 0.4067 with confidence interval (0.4042, 0.4092)
-rouge_l_precision: 0.3397 with confidence interval (0.3371, 0.3420)
+  git clone https://github.com/minhquang4334/vietnamese-accentizer.git
 ```
 
-![Alt text](learning_curve_coverage.png?raw=true "Learning Curve with coverage loss")
-
-Training with pointer generation enabled
---------------------------------------------
-
-After training for 500k iterations (batch size 8)
-
+#### Build `train`, `val`, `test data` :
 ```
-ROUGE-1:
-rouge_1_f_score: 0.3500 with confidence interval (0.3477, 0.3523)
-rouge_1_recall: 0.3718 with confidence interval (0.3693, 0.3745)
-rouge_1_precision: 0.3529 with confidence interval (0.3501, 0.3555)
-
-ROUGE-2:
-rouge_2_f_score: 0.1486 with confidence interval (0.1465, 0.1508)
-rouge_2_recall: 0.1573 with confidence interval (0.1551, 0.1597)
-rouge_2_precision: 0.1506 with confidence interval (0.1483, 0.1529)
-
-ROUGE-l:
-rouge_l_f_score: 0.3202 with confidence interval (0.3179, 0.3225)
-rouge_l_recall: 0.3399 with confidence interval (0.3374, 0.3426)
-rouge_l_precision: 0.3231 with confidence interval (0.3205, 0.3256)
+ cd data_precessing/
+ python make_datafiles.py
 ```
-![Alt text](learning_curve.png?raw=true "Learning Curve with pointer generation")
+processed data saved in `finished_files/` as
+> test.bin
+
+> val.bin
+
+> train.bin
+
+If you want to process your data, you can change three lines in `make_datafiles.py`
+```
+all_train_urls = "corrector_dataset_full/train_set.txt"
+all_val_urls = "corrector_dataset_full/val_set.txt"
+all_test_urls = "corrector_dataset_full/test_set.txt"
+```
+
+**Of course your data files have to formed like my data files**
+
+#### Pretrained `fasttext`
+Pointer generator networks has pretrained `fasttext` model.
+So you can build your pretrained `fasttext` model with [this tutorial](https://github.com/facebookresearch/fastText)
+
+**My pretrained `fasttext` model was trainned by 1 milion vietnamese articles.**
+
+#### Config for training
+Change your config in `data_util/config.py`
+
+Change link to your data files:
+```
+train_data_path = "../finished_files/chunked/train_*"
+eval_data_path = "../finished_files/val.bin"
+decode_data_path = "../finished_files/test.bin"
+vocab_path = "../finished_files/vocab"
+log_root = "log"
+fasttext_path = "/home/datbtd/torch_sum/ft_summarizer/data_util/fasttext.bin"
+```
+
+If used pretrainned `fastText` model, `emb_dim` must be equal embedding dimension of pretrained model
+```
+emb_dim=EMBEDDING_DIMENSION_OF_PRETRAINED_FASTTEXT_MODEL
+```
+
+Change `batch_size` and `max_iterations`:
+```
+batch_size=64
+max_iterations=200000
+```
+
+**I recommend `batch_size=64` and you can compute max_iterations how model can train all dataset through 5->7 epochs
 
 
-How to run training:
---------------------------------------------
-1) Follow data generation instruction from https://github.com/abisee/cnn-dailymail
-2) Run start_train.sh, you might need to change some path and parameters in data_util/config.py
-3) For training run start_train.sh, for decoding run start_decode.sh, and for evaluating run run_eval.sh
+#### Training
+If you dont have trained model
+```
+  ./start_train.sh
+```
 
-Note:
-* It is tested on pytorch 0.3 
-* You need to setup [pyrouge](https://github.com/andersjo/pyrouge) to get the rouge score
+If you have trained model
+```
+./start_train.sh YOUR_LINK_TO_TRAINED_MODEL
+```
 
 
 
