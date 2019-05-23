@@ -1,7 +1,5 @@
-pytorch implementation of *[Get To The Point: Summarization with Pointer-Generator Networks](https://arxiv.org/abs/1704.04368)*
-
 ## Introduction
-This project built a model that can normalize noise vietnamese user generated text. Source base [pointer-summary](https://github.com/atulkum/pointer_summarizer) and [datblue-pointer-summary-with-pretrained-fasttext](https://github.com/datblue/ft_sum)
+This pytorch project built a model that can normalize noise vietnamese user generated text. Source base [pointer-summary](https://github.com/atulkum/pointer_summarizer) and [datblue-pointer-summary-with-pretrained-fasttext](https://github.com/datblue/ft_sum)
 
 ## How to run
 ### Install project
@@ -74,6 +72,21 @@ If you have trained model
 ```
 ./start_train.sh YOUR_LINK_TO_TRAINED_MODEL
 ```
+
+#### Decode/Eval
+You can decode with your trained model. My Decode model use `Beam Search` stragegy for find the best result.
+
+```
+./start_decode.sh YOUR_LINK_TO_TRAINED_MODEL_YOU_WANT_TO_DECODE
+```
+
+Eval
+```
+./start_eval.sh YOUR_LINK_TO_TRAINED_MODEL_YOU_WANT_TO_EVAL
+```
+
+
+
 
 
 
