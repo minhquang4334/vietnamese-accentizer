@@ -19,9 +19,9 @@ END_TOKENS = [u'.', u'!', u'?', u'...', u"'", u"`", u'"', dm_single_close_quote,
 SENTENCE_START = '<s>'
 SENTENCE_END = '</s>'
 
-all_train_urls = "corrector_dataset/train_set.txt"
-all_val_urls = "corrector_dataset/val_set.txt"
-all_test_urls = "corrector_dataset/test_set.txt"
+all_train_urls = "corrector_dataset_full/train_set.txt"
+all_val_urls = "corrector_dataset_full/val_set.txt"
+all_test_urls = "corrector_dataset_full/test_set.txt"
 
 finished_files_dir = "../finished_files"
 chunks_dir = os.path.join(finished_files_dir, "chunked")
@@ -115,7 +115,7 @@ def fix_missing_period(line):
     if line == "": return line
     if line[-1] in END_TOKENS: return line
     # print line[-1]
-    return line + " ."
+    return line
 
 
 def get_art_abs(lines):

@@ -54,7 +54,6 @@ class Encoder(nn.Module):
     def forward(self, input, seq_lens):
         # embedded = self.embedding(input)
         embedded = input
-
         packed = pack_padded_sequence(embedded, seq_lens, batch_first=True)
         output, hidden = self.lstm(packed)
 

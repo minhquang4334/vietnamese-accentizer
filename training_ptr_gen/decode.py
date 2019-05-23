@@ -19,13 +19,19 @@ from data_util import data, config
 from model import Model
 from data_util.utils import write_for_rouge, rouge_eval, rouge_log
 from train_util import get_input_from_batch
-from data_util.data import myid2word, outputids2words
+from data_util.data import show_abs_oovs, myid2word, outputids2words
 
 from pyfasttext import FastText
 ft_model = FastText(config.fasttext_path)
 
 
 use_cuda = config.use_gpu and torch.cuda.is_available()
+
+def print_vietnamese(str):
+        val = u''
+        for i in range(len(str)):
+            val = val + str[i]
+        return val
 
 class Beam(object):
   def __init__(self, tokens, log_probs, state, context, coverage):
@@ -84,21 +90,25 @@ class BeamSearch(object):
 
             # Extract the output ids from the hypothesis and convert back to words
             output_ids = [int(t) for t in best_summary.tokens[1:]]
+#            print (output_ids)
             decoded_words = data.outputids2words(output_ids, self.vocab,
-                                                 (batch.art_oovs[0] if config.pointer_gen else None))
-
+                                                 (batch.art_oovs[0]))
+#            decoded_words = show_abs_oovs(' '.join(decoded_words), self.vocab,
+ #                                                (batch.art_oovs[0]))
+  #          print (batch.art_oovs)
             # Remove the [STOP] token from decoded_words, if necessary
             try:
                 fst_stop_idx = decoded_words.index(data.STOP_DECODING)
                 decoded_words = decoded_words[:fst_stop_idx]
             except ValueError:
                 decoded_words = decoded_words
-
+            if counter == 10: exit(0)
             original_abstract_sents = batch.original_abstracts_sents[0]
             original_articles = batch.original_articles
+            print ('Noise: ', original_articles[0])
+            print ('Norm: ', original_abstract_sents[0])
+            print ('Preditct: ', ' '.join(decoded_words))
 
-            write_for_rouge(original_articles ,original_abstract_sents, decoded_words, counter,
-                            self._rouge_ref_dir, self._rouge_dec_dir, self._rouge_art_dir)
             counter += 1
             if counter % 1000 == 0:
                 print('%d example in %d sec'%(counter, time.time() - start))
@@ -107,9 +117,6 @@ class BeamSearch(object):
             batch = self.batcher.next_batch()
 
         print("Decoder has finished reading dataset for single_pass.")
-        print("Now starting ROUGE eval...")
-        results_dict = rouge_eval(self._rouge_ref_dir, self._rouge_dec_dir)
-        rouge_log(results_dict, self._decode_dir)
 
 
     def beam_search(self, batch):
@@ -117,7 +124,8 @@ class BeamSearch(object):
         article_oovs, enc_batch, enc_padding_mask, enc_lens, enc_batch_extend_vocab, extra_zeros, c_t_0, coverage_t_0 = \
             get_input_from_batch(batch, use_cuda)
 
-        enc_batch = [outputids2words(ids,self.vocab,article_oovs[i]) for i,ids in enumerate(enc_batch.numpy())]
+        enc_batch = [outputids2words(ids,self.vocab,article_oovs[i]) for i,ids in enumerate(enc_batch_extend_vocab.numpy())]
+#        print (enc_batch)
         enc_batch_list = []
         for words in enc_batch:
             temp_list = []
@@ -129,7 +137,7 @@ class BeamSearch(object):
 
         encoder_outputs, encoder_feature, encoder_hidden = self.model.encoder(enc_batch_list, enc_lens)
         s_t_0 = self.model.reduce_state(encoder_hidden)
-
+#        print(enc_batch_list)
         dec_h, dec_c = s_t_0 # 1 x 2*hidden_size
         dec_h = dec_h.squeeze()
         dec_c = dec_c.squeeze()
@@ -145,8 +153,7 @@ class BeamSearch(object):
         steps = 0
         while steps < config.max_dec_steps and len(results) < config.beam_size:
             latest_tokens = [h.latest_token for h in beams]
-            latest_tokens = [t if t < self.vocab.size() else self.vocab.word2id(data.UNKNOWN_TOKEN) \
-                             for t in latest_tokens]
+            latest_tokens = [t for t in latest_tokens]
             y_t_1 = Variable(torch.LongTensor(latest_tokens))
             if use_cuda:
                 y_t_1 = y_t_1.cuda()

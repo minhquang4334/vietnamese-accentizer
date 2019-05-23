@@ -23,7 +23,9 @@ class Example(object):
     stop_decoding = vocab.word2id(data.STOP_DECODING)
 
     # Process the article
-    article_words = article.split()
+    article_words = article.decode('utf-8')
+    article_words = article_words.split()
+
     if len(article_words) > config.max_enc_steps:
       article_words = article_words[:config.max_enc_steps]
     self.enc_len = len(article_words) # store the length after truncation but before padding
@@ -31,6 +33,7 @@ class Example(object):
 
     # Process the abstract
     abstract = ' '.join(abstract_sentences) # string
+    abstract = abstract.decode('utf-8')
     abstract_words = abstract.split() # list of strings
     abs_ids = [vocab.word2id(w) for w in abstract_words] # list of word ids; OOVs are represented by the id for UNK token
 

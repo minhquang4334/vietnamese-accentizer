@@ -83,8 +83,8 @@ class Train(object):
             get_output_from_batch(batch, use_cuda)
 
         self.optimizer.zero_grad()
-
-        enc_batch = [outputids2words(ids,self.vocab,article_oovs[i]) for i,ids in enumerate(enc_batch.numpy())]
+       # enc_batch = [outputids2words(ids,self.vocab,article_oovs[i]) for i,ids in enumerate(enc_batch.numpy())]
+        enc_batch = [outputids2words(ids,self.vocab,article_oovs[i]) for i,ids in enumerate(enc_batch_extend_vocab.numpy())]
         enc_batch_list = []
         for words in enc_batch:
             temp_list = []
@@ -96,7 +96,6 @@ class Train(object):
 
         encoder_outputs, encoder_feature, encoder_hidden = self.model.encoder(enc_batch_list, enc_lens)
         s_t_1 = self.model.reduce_state(encoder_hidden)
-
         step_losses = []
         for di in range(min(max_dec_len, config.max_dec_steps)):
             y_t_1 = dec_batch[:, di]  # Teacher forcing
